@@ -19,6 +19,7 @@
 package org.ofbiz.camel.loader;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
@@ -38,6 +39,7 @@ public class CamelContainer implements Container {
 
     private static final String module = CamelContainer.class.getName();
     private static final String CONTAINER_NAME = "camel-container";
+    private static ProducerTemplate producerTemplate;
     private CamelContext context;
     private ContainerConfig.Container config;
 
@@ -47,10 +49,12 @@ public class CamelContainer implements Container {
 
         config = readContainerConfig(configFile);
         context = createCamelContext();
-        RouteBuilder routeBuilder = createRoutes();
 
+        RouteBuilder routeBuilder = createRoutes();
         addRoutesToContext(routeBuilder);
+        producerTemplate = context.createProducerTemplate();
     }
+
 
     @Override
     public boolean start() throws ContainerException {
@@ -73,6 +77,13 @@ public class CamelContainer implements Container {
         } catch (Exception e) {
             throw new ContainerException(e);
         }
+    }
+
+    public static ProducerTemplate getProducerTemplate() {
+        if (producerTemplate == null) {
+            throw new RuntimeException("ProducerTemplate not initialized");
+        }
+        return producerTemplate;
     }
 
     private void addRoutesToContext(RouteBuilder routeBuilder) throws ContainerException {
