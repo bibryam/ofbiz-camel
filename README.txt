@@ -1,15 +1,17 @@
-OFBiz <==> Camel connector
 
-This component allows Camel to interact with Ofbiz by executing Ofbiz services.
+OFBiz-Camel connector
+=====================
 
-It is an both a Camel and Ofbiz component, meaning it is a Camel component living inside Ofbiz and managed by Ofbiz as an Ofbiz component.
+This component allows Camel to interact with Ofbiz by executing Ofbiz services. It also allows Ofbiz to send messages to Camel endpoints from an Ofbiz service.
+It is both a Camel and Ofbiz component - it is a Camel component living inside Ofbiz and managed by Ofbiz as an Ofbiz component.
+In addition it has a CamelContainer which manages CamelContext as an Ofbiz Container. It means Camel is treated as part of Ofbiz framework.
 
-In addition it contains CamelContainer which manages CamelContext as an Ofbiz Container. In this case, Camel is treated as part of Ofbiz framework.
-
-The application contains a DemoRoute, demonstrating how to poll all files from hot-deploy/camel/data directory and create a note in Ofbiz by executing createNote service.
+The project contains a DemoRoute, demonstrating how to poll files from hot-deploy/camel/data directory and create a note in Ofbiz by executing createNote service.
+It also has a sendCamelMessage service which enables sending messages to Camel endpoints from Ofbiz serices.
 
 
 HOW TO USE:
+=====================
 
 1. Copy camel folder in ofbiz/hot-deploy
 
