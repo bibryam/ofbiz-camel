@@ -123,7 +123,6 @@ public class CamelContainer implements Container {
         return new DefaultCamelContext(registry);
     }
 
-
     private RouteBuilder createRoutes() throws ContainerException {
         String routeName = "org.ofbiz.camel.route.DemoRoute";
         ClassLoader loader = Thread.currentThread().getContextClassLoader();

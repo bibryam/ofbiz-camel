@@ -2,21 +2,29 @@
 OFBiz-Camel connector
 =====================
 
-This component allows Camel to interact with OFBiz by executing OFBiz services. It also allows Ofbiz to send messages to Camel endpoints from an Ofbiz service.
-It is both a Camel and Ofbiz component - it is a Camel component living inside Ofbiz and managed by Ofbiz as an Ofbiz component.
-In addition it has a CamelContainer which manages CamelContext as an Ofbiz Container. It means Camel is treated as part of Ofbiz framework.
+This component allows Camel and OFBiz to interact with each other.
 
-The project contains a DemoRoute, demonstrating how to poll files from plugins/ofbiz-camel/data directory and create a note in Ofbiz by executing createNote service.
-It also has a sendCamelMessage service which enables sending messages to Camel endpoints from Ofbiz serices.
+ - It allows Ofbiz services to reach to 200+ external systems using Camel connectors.
+ - It also allows external systems to send messages/events to OFBiz services using Camel that runs withing OFBiz.
 
+The project contains a DemoRoute, demonstrating how to poll files from plugins/ofbiz-camel/data directory and create a note in OFBiz by executing createNote service.
+It also has a sendCamelMessage service which enables sending messages to external systems from Ofbiz services.
+
+![project view](https://raw.githubusercontent.com/bibryam/ofbiz-camel/master/camel-ofbiz-integration.png)
+
+Tested to work with Apache OFBiz 16.11.04 and Apache Camel 2.21.0.
 
 HOW TO USE:
 =====================
 
-1. Copy camel folder in ofbiz/plugins
+1. Copy the project in ofbiz/plugins folder
 
-2. Compile the camel component
+2. Compile and run
 
-3. After running it should read note.txt file and create a note in OFBiz.
+3. After running it should read note.txt file and create a note in OFBiz database using services.
+
+4. For any additional help, reach out to me [here](http://www.ofbizian.com/p/about.html)
 
 ENJOY
+
+Licensed under The MIT License.
