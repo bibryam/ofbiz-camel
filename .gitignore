@@ -1,2 +1,3 @@
-/build
-*.impl
+/.gradle
+.idea
+*.iml
