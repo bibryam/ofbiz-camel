@@ -1,10 +1,9 @@
 package org.ofbiz.camel.services;
 
 import org.apache.camel.CamelExecutionException;
-import org.ofbiz.base.util.Debug;
 import org.ofbiz.camel.loader.CamelContainer;
-import org.ofbiz.service.DispatchContext;
-import org.ofbiz.service.ServiceUtil;
+import org.apache.ofbiz.service.DispatchContext;
+import org.apache.ofbiz.service.ServiceUtil;
 
 import java.util.Collections;
 import java.util.Map;
@@ -20,7 +19,6 @@ public class CamelServices {
         try {
             CamelContainer.getProducerTemplate().sendBodyAndHeaders(endpoint, body, headers);
         } catch (CamelExecutionException cee) {
-            Debug.logError(cee, module);
             return ServiceUtil.returnError(cee.getMessage());
         }
 

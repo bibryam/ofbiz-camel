@@ -8,9 +8,9 @@ public class DemoRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from("file://hot-deploy/camel/data")
+        from("file://plugins/ofbiz-camel/data")
                 .convertBodyTo(String.class)
-
+                
                 .setHeader("CamelOfbiz.Parameters.note", body())
                 .setHeader("CamelOfbiz.Parameters.noteName", header(Exchange.FILE_NAME))
 

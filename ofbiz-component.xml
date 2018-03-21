@@ -18,14 +18,22 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<ofbiz-component name="camel"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/ofbiz-component.xsd">
+<ofbiz-component name="ofbiz-camel"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/ofbiz-component.xsd">
     <resource-loader name="main" type="component"/>
     <classpath type="jar" location="build/lib/*"/>
     <classpath type="jar" location="lib/*"/>
 
     <service-resource type="model" loader="main" location="servicedef/services.xml"/>
 
-</ofbiz-component>
 
+    <container name="camel-container" loaders="main,rmi" class="org.ofbiz.camel.loader.CamelContainer">
+        <!--<property name="dispatcher-factory" value="org.apache.ofbiz.service.GenericDispatcherFactory"/>-->
+
+        <property name="route-name" value="org.ofbiz.camel.route.DemoRoute"/>
+        <property name="dispatcher-name" value="camel-dispatcher"/>
+        <property name="delegator-name" value="default"/>
+    </container>
+
+</ofbiz-component>

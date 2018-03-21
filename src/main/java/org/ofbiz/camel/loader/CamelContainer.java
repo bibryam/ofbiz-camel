@@ -23,38 +23,54 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
-import org.ofbiz.base.container.Container;
-import org.ofbiz.base.container.ContainerConfig;
-import org.ofbiz.base.container.ContainerException;
-import org.ofbiz.base.util.Debug;
-import org.ofbiz.entity.Delegator;
-import org.ofbiz.entity.DelegatorFactory;
-import org.ofbiz.service.GenericDispatcher;
-import org.ofbiz.service.LocalDispatcher;
+import org.apache.ofbiz.base.container.Container;
+import org.apache.ofbiz.base.container.ContainerConfig;
+import org.apache.ofbiz.base.container.ContainerException;
+import org.apache.ofbiz.base.start.StartupCommand;
+import org.apache.ofbiz.base.util.Debug;
+import org.apache.ofbiz.base.util.UtilValidate;
+import org.apache.ofbiz.entity.Delegator;
+import org.apache.ofbiz.entity.DelegatorFactory;
+import org.apache.ofbiz.service.GenericDispatcherFactory;
+import org.apache.ofbiz.service.LocalDispatcher;
+import org.apache.ofbiz.service.LocalDispatcherFactory;
+import org.apache.ofbiz.service.ServiceContainer;
+
+import java.util.List;
 
 /**
  * A container for Apache Camel.
  */
 public class CamelContainer implements Container {
-
     private static final String module = CamelContainer.class.getName();
-    private static final String CONTAINER_NAME = "camel-container";
+//    private static LocalDispatcherFactory dispatcherFactory;
     private static ProducerTemplate producerTemplate;
     private CamelContext context;
-    private ContainerConfig.Container config;
+    private String name;
 
     @Override
-    public void init(String[] args, String configFile) throws ContainerException {
-        Debug.logInfo("Initializing camel container", module);
+    public void init(List<StartupCommand> ofbizCommands, String name, String configFile) throws ContainerException {
+        this.name = name;
+//        ContainerConfig.Configuration cfg = ContainerConfig.getConfiguration(name, configFile);
+//        ContainerConfig.Configuration.Property dispatcherFactoryProperty = cfg.getProperty("dispatcher-factory");
+//        if (dispatcherFactoryProperty == null || UtilValidate.isEmpty(dispatcherFactoryProperty.value)) {
+//            throw new ContainerException("Unable to initialize container " + name + ": dispatcher-factory property is not set");
+//        }
+//        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+//        try {
+//            Class<?> c = loader.loadClass(dispatcherFactoryProperty.value);
+//            dispatcherFactory = (LocalDispatcherFactory) c.newInstance();
+//        } catch (Exception e) {
+//            throw new ContainerException(e);
+//        }
 
-        config = readContainerConfig(configFile);
         context = createCamelContext();
 
         RouteBuilder routeBuilder = createRoutes();
         addRoutesToContext(routeBuilder);
         producerTemplate = context.createProducerTemplate();
-    }
 
+    }
 
     @Override
     public boolean start() throws ContainerException {
@@ -77,6 +93,11 @@ public class CamelContainer implements Container {
         } catch (Exception e) {
             throw new ContainerException(e);
         }
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     public static ProducerTemplate getProducerTemplate() {
@@ -102,16 +123,9 @@ public class CamelContainer implements Container {
         return new DefaultCamelContext(registry);
     }
 
-    private ContainerConfig.Container readContainerConfig(String configFile) throws ContainerException {
-        ContainerConfig.Container cc = ContainerConfig.getContainer(CONTAINER_NAME, configFile);
-        if (cc == null) {
-            throw new ContainerException(CONTAINER_NAME + " configuration not found in container config!");
-        }
-        return cc;
-    }
 
     private RouteBuilder createRoutes() throws ContainerException {
-        String routeName = ContainerConfig.getPropertyValue(config, "route-name", "org.ofbiz.camel.route.DemoRoute");
+        String routeName = "org.ofbiz.camel.route.DemoRoute";
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
         try {
@@ -124,9 +138,8 @@ public class CamelContainer implements Container {
     }
 
     private LocalDispatcher createDispatcher() throws ContainerException {
-        String delegatorName = ContainerConfig.getPropertyValue(config, "delegator-name", "default");
-        Delegator delegator = DelegatorFactory.getDelegator(delegatorName);
-        String dispatcherName = ContainerConfig.getPropertyValue(config, "dispatcher-name", "camel-dispatcher");
-        return GenericDispatcher.getLocalDispatcher(dispatcherName, delegator);
+        Delegator delegator = DelegatorFactory.getDelegator("default");
+        return ServiceContainer.getLocalDispatcher("camel-dispatcher", delegator);
+//        return dispatcherFactory.createLocalDispatcher("camel-dispatcher", delegator);
     }
 }

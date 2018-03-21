@@ -20,7 +20,7 @@ import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
-import org.ofbiz.service.LocalDispatcher;
+import org.apache.ofbiz.service.LocalDispatcher;
 
 /**
  * Represents a Ofbiz endpoint.
