@@ -24,14 +24,19 @@ under the License.
     <resource-loader name="main" type="component"/>
     <classpath type="jar" location="build/lib/*"/>
     <classpath type="jar" location="lib/*"/>
+    <classpath type="dir" location="config"/>
 
     <service-resource type="model" loader="main" location="servicedef/services.xml"/>
 
 
-    <container name="camel-container" loaders="main,rmi" class="org.ofbiz.camel.loader.CamelContainer">
+    <container name="camel-container" loaders="main,rmi" class="org.apache.ofbiz.camel.loader.CamelContainer">
         <!--<property name="dispatcher-factory" value="org.apache.ofbiz.service.GenericDispatcherFactory"/>-->
-
-        <property name="route-name" value="org.ofbiz.camel.route.DemoRoute"/>
+        
+        <property name="routes.package" value="org.apache.ofbiz.camel.route"/>
+        <property name="route-name" value="org.apache.ofbiz.camel.route.DemoRoute"/>
+        <property name="routeConfigFile" value="config/camel-routes.xml"/>
+        <property name="packageScan" value="true"/>
+        <property name="routeScan" value="false"/>
         <property name="dispatcher-name" value="camel-dispatcher"/>
         <property name="delegator-name" value="default"/>
     </container>

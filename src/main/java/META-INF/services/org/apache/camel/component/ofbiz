@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-class=org.ofbiz.camel.component.OfbizComponent
+class=org.apache.ofbiz.camel.component.OfbizComponent

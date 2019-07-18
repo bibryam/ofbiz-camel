@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ofbiz.camel.component;
+package org.apache.ofbiz.camel.component;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.RuntimeExchangeException;
