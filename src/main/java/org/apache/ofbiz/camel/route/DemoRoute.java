@@ -1,4 +1,4 @@
-package org.ofbiz.camel.route;
+package org.apache.ofbiz.camel.route;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;

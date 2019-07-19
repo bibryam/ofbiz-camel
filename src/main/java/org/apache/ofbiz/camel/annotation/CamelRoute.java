@@ -14,25 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.ofbiz.camel.component;
+package org.apache.ofbiz.camel.annotation;
 
-import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
-
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Represents the component that manages {@link OfbizEndpoint}.
+ * 
+ * Indicates that an annotated class is a "camel route". Such classes are considered as candidates for 
+ * auto-detection when using annotation-based configuration.
+ *
  */
-public class OfbizComponent extends DefaultComponent {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE})
+public @interface CamelRoute {
 
-    protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-        OfbizEndpoint endpoint = new OfbizEndpoint(uri, this, remaining);
-        setProperties(endpoint, parameters);
-        if (endpoint.getDispatcher() == null) {
-            throw new IllegalArgumentException("dispatcher must be specified");
-        }
-
-        return endpoint;
-    }
 }

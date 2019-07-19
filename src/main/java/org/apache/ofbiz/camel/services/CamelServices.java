@@ -1,7 +1,7 @@
-package org.ofbiz.camel.services;
+package org.apache.ofbiz.camel.services;
 
 import org.apache.camel.CamelExecutionException;
-import org.ofbiz.camel.loader.CamelContainer;
+import org.apache.ofbiz.camel.loader.CamelContainer;
 import org.apache.ofbiz.service.DispatchContext;
 import org.apache.ofbiz.service.ServiceUtil;
 

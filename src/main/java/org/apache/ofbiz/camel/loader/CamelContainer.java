@@ -16,129 +16,125 @@
  * specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package org.ofbiz.camel.loader;
+package org.apache.ofbiz.camel.loader;
+
+import java.util.List;
+import java.util.Set;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.DefaultPackageScanClassResolver;
 import org.apache.camel.impl.SimpleRegistry;
+import org.apache.camel.spi.PackageScanClassResolver;
 import org.apache.ofbiz.base.container.Container;
 import org.apache.ofbiz.base.container.ContainerConfig;
 import org.apache.ofbiz.base.container.ContainerException;
 import org.apache.ofbiz.base.start.StartupCommand;
 import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.DelegatorFactory;
-import org.apache.ofbiz.service.GenericDispatcherFactory;
 import org.apache.ofbiz.service.LocalDispatcher;
-import org.apache.ofbiz.service.LocalDispatcherFactory;
 import org.apache.ofbiz.service.ServiceContainer;
-
-import java.util.List;
 
 /**
  * A container for Apache Camel.
  */
 public class CamelContainer implements Container {
-    private static final String module = CamelContainer.class.getName();
+	private static final String module = CamelContainer.class.getName();
 //    private static LocalDispatcherFactory dispatcherFactory;
-    private static ProducerTemplate producerTemplate;
-    private CamelContext context;
-    private String name;
+	private static ProducerTemplate producerTemplate;
+	private CamelContext context;
+	private String name;
 
-    @Override
-    public void init(List<StartupCommand> ofbizCommands, String name, String configFile) throws ContainerException {
-        this.name = name;
-//        ContainerConfig.Configuration cfg = ContainerConfig.getConfiguration(name, configFile);
-//        ContainerConfig.Configuration.Property dispatcherFactoryProperty = cfg.getProperty("dispatcher-factory");
-//        if (dispatcherFactoryProperty == null || UtilValidate.isEmpty(dispatcherFactoryProperty.value)) {
-//            throw new ContainerException("Unable to initialize container " + name + ": dispatcher-factory property is not set");
-//        }
-//        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-//        try {
-//            Class<?> c = loader.loadClass(dispatcherFactoryProperty.value);
-//            dispatcherFactory = (LocalDispatcherFactory) c.newInstance();
-//        } catch (Exception e) {
-//            throw new ContainerException(e);
-//        }
+	@Override
+	public void init(List<StartupCommand> ofbizCommands, String name, String configFile) throws ContainerException {
+		this.name = name;
+		context = createCamelContext();
+		ContainerConfig.Configuration cfg = ContainerConfig.getConfiguration(name, configFile);
+		String packageName = ContainerConfig.getPropertyValue(cfg, "package", "org.apache.ofbiz.camel.route");
+		PackageScanClassResolver packageResolver = new DefaultPackageScanClassResolver();
+		Set<Class<?>> routesClassesSet = packageResolver.findImplementations(RouteBuilder.class, packageName);
+		routesClassesSet.forEach(key -> {
+			RouteBuilder routeBuilder;
+			try {
+				routeBuilder = createRoutes(key.getName());
+				addRoutesToContext(routeBuilder);
+			} catch (ContainerException e) {
 
-        context = createCamelContext();
+			}
+		});
 
-        RouteBuilder routeBuilder = createRoutes();
-        addRoutesToContext(routeBuilder);
-        producerTemplate = context.createProducerTemplate();
+		producerTemplate = context.createProducerTemplate();
 
-    }
+	}
 
-    @Override
-    public boolean start() throws ContainerException {
-        Debug.logInfo("Starting camel container", module);
+	@Override
+	public boolean start() throws ContainerException {
+		Debug.logInfo("Starting camel container", module);
 
-        try {
-            context.start();
-        } catch (Exception e) {
-            throw new ContainerException(e);
-        }
-        return true;
-    }
+		try {
+			context.start();
+		} catch (Exception e) {
+			throw new ContainerException(e);
+		}
+		return true;
+	}
 
-    @Override
-    public void stop() throws ContainerException {
-        Debug.logInfo("Stopping camel container", module);
+	@Override
+	public void stop() throws ContainerException {
+		Debug.logInfo("Stopping camel container", module);
 
-        try {
-            context.stop();
-        } catch (Exception e) {
-            throw new ContainerException(e);
-        }
-    }
+		try {
+			context.stop();
+		} catch (Exception e) {
+			throw new ContainerException(e);
+		}
+	}
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    public static ProducerTemplate getProducerTemplate() {
-        if (producerTemplate == null) {
-            throw new RuntimeException("ProducerTemplate not initialized");
-        }
-        return producerTemplate;
-    }
+	public static ProducerTemplate getProducerTemplate() {
+		if (producerTemplate == null) {
+			throw new RuntimeException("ProducerTemplate not initialized");
+		}
+		return producerTemplate;
+	}
 
-    private void addRoutesToContext(RouteBuilder routeBuilder) throws ContainerException {
-        try {
-            context.addRoutes(routeBuilder);
-        } catch (Exception e) {
-            Debug.logError(e, "Cannot add routes: " + routeBuilder, module);
-            throw new ContainerException(e);
-        }
-    }
+	private void addRoutesToContext(RouteBuilder routeBuilder) throws ContainerException {
+		try {
+			context.addRoutes(routeBuilder);
+		} catch (Exception e) {
+			Debug.logError(e, "Cannot add routes: " + routeBuilder, module);
+			throw new ContainerException(e);
+		}
+	}
 
-    private DefaultCamelContext createCamelContext() throws ContainerException {
-        LocalDispatcher dispatcher = createDispatcher();
-        SimpleRegistry registry = new SimpleRegistry();
-        registry.put("dispatcher", dispatcher);
-        return new DefaultCamelContext(registry);
-    }
+	private DefaultCamelContext createCamelContext() throws ContainerException {
+		LocalDispatcher dispatcher = createDispatcher();
+		SimpleRegistry registry = new SimpleRegistry();
+		registry.put("dispatcher", dispatcher);
+		return new DefaultCamelContext(registry);
+	}
 
-    private RouteBuilder createRoutes() throws ContainerException {
-        String routeName = "org.ofbiz.camel.route.DemoRoute";
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+	private RouteBuilder createRoutes(String routeBuilderClassName) throws ContainerException {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		try {
+			Class<?> c = loader.loadClass(routeBuilderClassName);
+			return (RouteBuilder) c.newInstance();
+		} catch (Exception e) {
+			Debug.logError(e, "Cannot get instance of the camel route builder: " + routeBuilderClassName, module);
+			throw new ContainerException(e);
+		}
+	}
 
-        try {
-            Class<?> c = loader.loadClass(routeName);
-            return (RouteBuilder) c.newInstance();
-        } catch (Exception e) {
-            Debug.logError(e, "Cannot get instance of the camel route: " + routeName, module);
-            throw new ContainerException(e);
-        }
-    }
-
-    private LocalDispatcher createDispatcher() throws ContainerException {
-        Delegator delegator = DelegatorFactory.getDelegator("default");
-        return ServiceContainer.getLocalDispatcher("camel-dispatcher", delegator);
+	private LocalDispatcher createDispatcher() throws ContainerException {
+		Delegator delegator = DelegatorFactory.getDelegator("default");
+		return ServiceContainer.getLocalDispatcher("camel-dispatcher", delegator);
 //        return dispatcherFactory.createLocalDispatcher("camel-dispatcher", delegator);
-    }
+	}
 }
