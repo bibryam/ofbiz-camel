@@ -20,6 +20,5 @@
 dependencies {
     //Required compile-time and runtime dependencies
     pluginLibsCompile 'org.apache.camel:camel-core:2.21.0'
-    pluginLibsRuntime 'org.apache.camel:camel-core:2.21.0'
 }
 
