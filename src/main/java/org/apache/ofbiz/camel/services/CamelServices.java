@@ -1,16 +1,29 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.ofbiz.camel.services;
 
 import org.apache.camel.CamelExecutionException;
 import org.apache.ofbiz.camel.loader.CamelContainer;
 import org.apache.ofbiz.service.DispatchContext;
 import org.apache.ofbiz.service.ServiceUtil;
-
 import java.util.Collections;
 import java.util.Map;
 
 public class CamelServices {
-    private static String module = CamelServices.class.getName();
-
     public static Map<String, Object> sendCamelMessage(DispatchContext ctx, Map<String, Object> context) {
         Object body = context.get("body");
         String endpoint = (String) context.get("endpoint");
@@ -25,6 +38,7 @@ public class CamelServices {
         return ServiceUtil.returnSuccess();
     }
 
+    @SuppressWarnings("unchecked")
     private static Map<String, Object> getHeaders(Map<String, Object> context) {
         Map<String, Object> headers = (Map<String, Object>) context.get("headers");
         return headers != null ? headers : Collections.<String, Object>emptyMap();
