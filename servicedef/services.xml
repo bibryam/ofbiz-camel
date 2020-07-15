@@ -24,7 +24,7 @@ under the License.
     <vendor>OFBiz</vendor>
     <version>1.0</version>
 
-    <service name="sendCamelMessage" engine="java" location="org.ofbiz.camel.services.CamelServices"
+    <service name="sendCamelMessage" engine="java" location="org.apache.ofbiz.camel.services.CamelServices"
         invoke="sendCamelMessage" auth="true" use-transaction="false">
         <description>Sends a message to a Camel Endpoint</description>
         <attribute mode="IN" name="endpoint" optional="false" type="String"/>
